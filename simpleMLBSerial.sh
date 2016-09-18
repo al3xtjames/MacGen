@@ -20,7 +20,10 @@
 ## The script version
 gScriptVersion="2.0"
 ## Debug mode, setting to 1 will print out information about the input serial number & generated MLB values
-gDebug=1
+gDebug=0
+
+## The repo folder
+gRepo=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 ## The input Mac model
 gProductName="$1"
@@ -32,7 +35,7 @@ gMLB=""
 ## The location from the input serial number, will be properly initialized later
 gLocation=""
 
-source common.sh
+source "$gRepo/common.sh"
 
 #-------------------------------------------------------------------------------#
 function _printSerialNumber()
@@ -80,17 +83,17 @@ function _generateMLB()
 {
 	# Source existing model data from config
 	if [[ $gProductName =~ "iMac" ]]; then
-		source "data/iMac.cfg"
+		source "$gRepo/data/iMac.cfg"
 	elif [[ $gProductName =~ "MacBookAir" ]]; then
-		source "data/MacBook Air.cfg"
+		source "$gRepo/data/MacBook Air.cfg"
 	elif [[ $gProductName =~ "MacBookPro" ]]; then
-		source "data/MacBook Pro.cfg"
+		source "$gRepo/data/MacBook Pro.cfg"
 	elif [[ $gProductName =~ "MacBook" ]]; then
-		source "data/MacBook.cfg"
+		source "$gRepo/data/MacBook.cfg"
 	elif [[ $gProductName =~ "Macmini" ]]; then
-		source "data/Mac mini.cfg"
+		source "$gRepo/data/Mac mini.cfg"
 	elif [[ $gProductName =~ "MacPro" ]]; then
-		source "data/Mac Pro.cfg"
+		source "$gRepo/data/Mac Pro.cfg"
 	else
 		_printError "Invalid model identifier!"
 	fi
