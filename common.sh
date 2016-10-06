@@ -38,7 +38,7 @@ function _decodeLocationValue()
 {
 	locationValue=$1
 
-	source data/Locations.cfg
+	source "$gRepo/data/Locations.cfg"
 
 	echo "$location"
 }

@@ -41,19 +41,18 @@ function _generateSerialNumber()
 	fi
 
 	# Source existing model data from config
-	if [[ $gProductName =~ "iMac" ]]; then
+	if [[ "$gProductName" =~ "iMac" ]]; then
 		source "$gRepo/data/iMac.cfg"
-	elif [[ $gProductName =~ "MacBookAir" ]]; then
+	elif [[ "$gProductName" =~ "MacBookAir" ]]; then
 		source "$gRepo/data/MacBook Air.cfg"
-	elif [[ $gProductName =~ "MacBookPro" ]]; then
+	elif [[ "$gProductName" =~ "MacBookPro" ]]; then
 		source "$gRepo/data/MacBook Pro.cfg"
-	elif [[ $gProductName =~ "MacBook" ]]; then
+	elif [[ "$gProductName" =~ "MacBook" ]]; then
 		source "$gRepo/data/MacBook.cfg"
-	elif [[ $gProductName =~ "Macmini" ]]; then
+	elif [[ "$gProductName" =~ "Macmini" ]]; then
 		source "$gRepo/data/Mac mini.cfg"
-	elif [[ $gProductName =~ "MacPro" ]]; then
+	elif [[ "$gProductName" =~ "MacPro" ]]; then
 		source "$gRepo/data/Mac Pro.cfg"
-	else
 		_printError "Invalid model identifier!"
 	fi
 
