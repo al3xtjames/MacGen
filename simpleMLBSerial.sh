@@ -130,7 +130,7 @@ function _generateMLB()
 	fi
 
 	# Generate the CC value (checksum?)
-	# TODO: Research if this ia checksum, and see if it is possible to calculate it from the ROM
+	# TODO: Research if this is a checksum, and see if it is possible to calculate it from the ROM
 	declare -a CCCodes=('GU' '4N' 'J9' 'QX' 'OP' 'CD' '3F' 'U5' 'KP' 'D5' 'SJ' '7P' 'RG' 'W5' '92' 'MA' '2Y' '26' 'L0' 'NA' 'TL' '2D' '8U')
 	CCIndex=$(jot -r 1  0 $((${#CCCodes[@]} - 1)))
 	CC=${CCCodes[CCIndex]}

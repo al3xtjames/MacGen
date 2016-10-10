@@ -75,7 +75,7 @@ function _decodeWeekValue()
 	esac
 
 	case $weekValue in
-		[1-9]) let weekNumber+=$2;;
+		[1-9]) let weekNumber+=$weekValue;;
 		C) let weekNumber+=10;;
 		D) let weekNumber+=11;;
 		F) let weekNumber+=12;;
