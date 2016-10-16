@@ -53,6 +53,7 @@ function _generateSerialNumber()
 		source "$gRepo/data/Mac mini.cfg"
 	elif [[ "$gProductName" =~ "MacPro" ]]; then
 		source "$gRepo/data/Mac Pro.cfg"
+	else
 		_printError "Invalid model identifier!"
 	fi
 
@@ -60,7 +61,6 @@ function _generateSerialNumber()
 	PPPIndex=$(jot -r 1 0 $((${#PPPCodes[@]} - 1)))
 	PPP=${PPPCodes[PPPIndex]}
 	if [ $gDebug -eq 1 ]; then
-		source data/Locations.cfg
 		location=$(_decodeLocationValue $PPP)
 		_printDebug "Generated manufacturing location" "$location"
 	fi

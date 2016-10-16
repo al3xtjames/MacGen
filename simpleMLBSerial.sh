@@ -101,7 +101,6 @@ function _generateMLB()
 	# Get the manufacturing location from the serial number
 	PPP=$(echo $gSerialNumber | cut -c 1-3)
 	if [ $gDebug -eq 1 ]; then
-		source data/Locations.cfg
 		location=$(_decodeLocationValue $PPP)
 		_printDebug "Manufacturing location (from serial number)" "$location"
 	fi
