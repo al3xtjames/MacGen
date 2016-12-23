@@ -63,7 +63,7 @@ function _checkSerialNumber()
 	elif [ -z "$gProductName" ] || [ -z "$gSerialNumber" ]; then
 		echo "simpleMLBSerial.sh v$gScriptVersion - Simple MLB generator script by theracermaster"
 		echo
-		echo "Usage ./simpleMLBSerial.sh <product name> <serial number>"
+		echo "Usage: ./simpleMLBSerial.sh <product name> <serial number>"
 		echo "     <product name>      Target Mac product name (model ID)"
 		echo "     <serial number>     Target Mac serial number"
 		echo "     -h                  Help (this screen)"

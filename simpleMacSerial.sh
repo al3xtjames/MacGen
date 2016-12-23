@@ -109,7 +109,7 @@ function _generateSerialNumber()
 if [ "$1" == "-h" ]; then
 	echo "simpleMacSerial.sh v$gScriptVersion - Simple Mac serial number script by theracermaster"
 	echo
-	echo "Usage ./simpleMacSerial.sh <product name>"
+	echo "Usage: ./simpleMacSerial.sh <product name>"
 	echo "     <product name>      Target Mac product name (model ID)"
 	echo "     -h                  Help (this screen)"
 	echo
