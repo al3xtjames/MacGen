@@ -110,7 +110,7 @@ function _generateMLB()
 	# Decode the serial number Y value to get the MLB Y value
 	Y=$(_decodeYearValue $serialNumberY)
 	if [ $gDebug -eq 1 ]; then
-		_printDebug "Manufacturing year (from serial number)" $Y
+		_printDebug "Manufacturing year (from serial number)" 201$Y
 	fi
 
 	# Get the WW value (manufacturing week) from the serial number
