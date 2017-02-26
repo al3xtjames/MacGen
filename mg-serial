@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+# mg-serial - Mac serial number generator
+
+# The repo folder
+gRepo=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+# shellcheck source=mg-common
+source "$gRepo/mg-common"
+
+function help()
+{
+	echo "mg-serial v$gScriptVersion"
+	echo "Mac serial number generator script"
+	echo
+	echo "Usage: mg-serial <product name> (arguments)"
+	echo
+	echo "     <product name>          Target Mac product name (model ID)"
+	echo "     --help (-h)             Help (this screen)"
+	echo
+	echo "If no product name is specified, system values from the IORegistry will be used."
+	exit 0
+}
+
+function generate_serial_number()
+{
+	# Source existing model data
+	if [[ "$gProductName" =~ "iMac" ]]; then
+		# shellcheck source=data/iMac.dat
+		source "$gRepo/data/iMac.dat"
+	elif [[ "$gProductName" =~ "MacBookAir" ]]; then
+		# shellcheck source=data/MacBookAir.dat
+		source "$gRepo/data/MacBookAir.dat"
+	elif [[ "$gProductName" =~ "MacBookPro" ]]; then
+		# shellcheck source=data/MacBookPro.dat
+		source "$gRepo/data/MacBookPro.dat"
+	elif [[ "$gProductName" =~ "MacBook" ]]; then
+		# shellcheck source=data/MacBook.dat
+		source "$gRepo/data/MacBook.dat"
+	elif [[ "$gProductName" =~ "Macmini" ]]; then
+		# shellcheck source=data/Macmini.dat
+		source "$gRepo/data/Macmini.dat"
+	elif [[ "$gProductName" =~ "MacPro" ]]; then
+		# shellcheck source=data/MacPro.dat
+		source "$gRepo/data/MacPro.dat"
+	else
+		print_error "Invalid model identifier!"
+	fi
+
+	# Generate the PPP value (manufacturing location)
+	local PPPIndex=$(jot -r 1 0 $((${#PPPCodes[@]} - 1)))
+	local PPP=${PPPCodes[PPPIndex]}
+	if [ $gDebug -eq 1 ]; then
+		local location=$(decode_location_val "$PPP")
+		print_debug "Generated manufacturing location" "$location"
+	fi
+
+	# Generate the Y value (manufacturing year)
+	local YIndex=$(jot -r 1 0 $((${#YCodes[@]} - 1)))
+	local Y=${YCodes[YIndex]}
+	if [ $gDebug -eq 1 ]; then
+		local year=$(decode_year_val "$Y")
+		print_debug "Generated manufacturing year" "201$year"
+	fi
+
+	# Generate the W value (manufacturing week)
+	# Possible W values: 1-9, C, D, F-H, K-N, P-R, T-Y (no 0, A, B, E, I, O, S, or Z)
+	local WCodes=('1' '2' '3' '4' '5' '6' '7' '8' '9' 'C' 'D' 'F' 'G' 'H' 'K' 'L' 'M' 'N' 'P' 'Q' 'R' 'T' 'U' 'V' 'W' 'X' 'Y')
+	local WIndex=$(jot -r 1 0 $((${#WCodes[@]} - 1)))
+	local W=${WCodes[WIndex]}
+	if [ $gDebug -eq 1 ]; then
+		local week=$(decode_week_val "$Y" "$W")
+		print_debug "Generated manufacturing week" "$week"
+	fi
+
+	# Generate the SSS value (unique identifier)
+	local base62=($(echo {0..9} {a..z} {A..Z}))
+	local productionNumber=$(echo $((10000 + $RANDOM)) | cut -c 1-5)
+	for i in $(bc <<< "obase=36; $productionNumber"); do
+		echo "${base62[$((10#$i))]}" | tr '\n' ',' | tr -d ',' >> "/tmp/simpleMacSerial_SSS"
+	done
+	local SSS=$(tr '[:lower:]' '[:upper:]' < /tmp/simpleMacSerial_SSS)
+	rm "/tmp/simpleMacSerial_SSS"
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Generated unique identifier" "$SSS"
+	fi
+
+	# Generate the CCCC value (model identifer) from the model data
+	local CCCCIndex=$(jot -r 1 0 $((${#CCCCCodes[@]} - 1)))
+	local CCCC=${CCCCCodes[CCCCIndex]}
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Generated model identifier" "$CCCC"
+	fi
+
+	gSerialNumber="$PPP$Y$W$SSS$CCCC"
+}
+
+
+# Were any valid arguments supplied?
+if [ $# -eq 1 ]; then
+	# Print the help menu if it was requested
+	case "$1" in
+		-h|--help)
+			help
+			exit
+			;;
+	esac
+	# Yes. Set gProductName to the supplied model ID
+	gProductName="$1"
+else
+	# No. Use the system model ID (from the IORegistry)
+	gProductName=$(ioreg -k product-name -d 2 | awk '/product-name/ {print $3}' | tr -d '"<>')
+	if [ $gDebug -eq 1 ]; then
+		print_debug "NOTE" "No input product name found, using IORegistry value ($gProductName)"
+	fi
+fi
+
+generate_serial_number
+if [ $gDebug -eq 1 ]; then
+	echo
+	print_debug "Generated $gProductName serial number" "$gSerialNumber"
+else
+	echo "$gSerialNumber"
+fi

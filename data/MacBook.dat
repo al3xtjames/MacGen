@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# MacBook model data
+
+if [ "$gProductName" == "MacBook8,1" ]; then # MacBook (Retina, 12-inch, Early 2015)
+	# System serial data
+	local PPPCodes=('C02') # Manufactured at Quanta Computer, China
+	local YCodes=('P' 'Q' 'R') # Manufactured in early 2015 to early 2016
+	local CCCCCodes=('DNCR' 'DNCT' 'DNML' 'DNMM' 'F8QM' 'F8QN' 'F9RN' 'FC6M' 'FC6N' 'FC6P' 'FD55' 'FD5Y' 'FF7L' 'FFVW' 'FFVY' 'FG46' 'FGC4' 'FGMR' 'FGMT' 'FL8N' 'FM8L' 'FM8M' 'FM8N' 'FMLG' 'FP12')
+	# Main logic board serial data
+	local EEEECodes=('FV36' 'FV5W' 'FV8R')
+	local boardType=201
+
+elif [ "$gProductName" == "MacBook9,1" ]; then # MacBook (Retina, 12-inch, Early 2016)
+	# System serial data
+	local PPPCodes=('C02') # Manufactured at Quanta Computer, China
+	local YCodes=('R' 'S' 'T') # Manufactured in early 2016 to late 2017
+	local CCCCCodes=('GTHR' 'GTHT' 'GTHV' 'GTHW' 'GTHX' 'GTHY' 'GTJ0' 'GTJ1' 'GTJ2' 'GTJ3' 'GTJ4' 'GTJ6' 'GTJ7' 'GTJ8' 'GTJ9' 'GTJC' 'GTJD' 'H3QW' 'H3QX' 'H3QY' 'H3R5' 'H3R6' 'H3R7')
+	# Main logic board serial data
+	local EEEECodes=('H6KT')
+	local boardType=307
+
+else
+	print_error "Invalid model identifier!"
+fi

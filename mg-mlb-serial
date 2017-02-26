@@ -1,0 +1,158 @@
+#!/usr/bin/env bash
+# mg-mlb-serial - Mac MLB serial number generator
+
+# The repo folder
+gRepo=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+# shellcheck source=mg-common
+source "$gRepo/mg-common"
+
+function help()
+{
+	echo "mg-mlb-serial v$gScriptVersion"
+	echo "Mac MLB serial number generator script"
+	echo
+	echo "Usage: mg-mlb-serial <product name> <serial number>"
+	echo
+	echo "     <product name>          Target Mac product name (model ID)"
+	echo "     <serial number>         Target Mac system serial number"
+	echo "     --help (-h)             Help (this screen)"
+	echo
+	echo "If no values are specified, system values from the IORegistry will be used."
+	exit 0
+}
+
+function print_serial_number()
+{
+	printf "\n     "
+
+	local serialPPP="${gSerialNumber:0:3}"
+	local serialY="${gSerialNumber:3:1}"
+	local serialW="${gSerialNumber:4:1}"
+	local serialSSS="${gSerialNumber:5:3}"
+	local serialCCCC="${gSerialNumber:8:4}"
+
+	printf "%b%b%s %b%s %b%s %b%b%s %b%s%b\n" $gStyleBold $gColorGreen "$serialPPP" \
+		$gColorRed "$serialY" $gColorBlue "$serialW" $gStyleReset $gStyleBold "$serialSSS" \
+		$gColorPurple "$serialCCCC" $gStyleReset
+}
+
+function generate_mlb_serial()
+{
+	# Source existing model data
+	if [[ "$gProductName" =~ "iMac" ]]; then
+		# shellcheck source=data/iMac.dat
+		source "$gRepo/data/iMac.dat"
+	elif [[ "$gProductName" =~ "MacBookAir" ]]; then
+		# shellcheck source=data/MacBookAir.dat
+		source "$gRepo/data/MacBookAir.dat"
+	elif [[ "$gProductName" =~ "MacBookPro" ]]; then
+		# shellcheck source=data/MacBookPro.dat
+		source "$gRepo/data/MacBookPro.dat"
+	elif [[ "$gProductName" =~ "MacBook" ]]; then
+		# shellcheck source=data/MacBook.dat
+		source "$gRepo/data/MacBook.dat"
+	elif [[ "$gProductName" =~ "Macmini" ]]; then
+		# shellcheck source=data/Macmini.dat
+		source "$gRepo/data/Macmini.dat"
+	elif [[ "$gProductName" =~ "MacPro" ]]; then
+		# shellcheck source=data/MacPro.dat
+		source "$gRepo/data/MacPro.dat"
+	else
+		print_error "Invalid model identifier!"
+	fi
+
+	# Get the manufacturing location from the serial number
+	local PPP="${gSerialNumber:0:3}"
+	if [ $gDebug -eq 1 ]; then
+		local location=$(decode_location_val "$PPP")
+		print_debug "Manufacturing location (from serial number)" "$location"
+	fi
+
+	# Get the Y value (manufacturing year) from the serial number
+	local serialY="${gSerialNumber:3:1}"
+	# Decode the serial number Y value to get the MLB Y value
+	Y=$(decode_year_val "$serialY")
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Manufacturing year (from serial number)" "201$Y"
+	fi
+
+	# Get the WW value (manufacturing week) from the serial number
+	local serialW="${gSerialNumber:4:1}"
+	# Decode the serial number W value to get the MLB WW value
+	## Logic boards are produced ~1 week before the system is complete
+	local WW=$(($(decode_week_val "$serialY" "$serialW") - 1))
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Manufacturing week (from serial number)" "$WW"
+	fi
+	if [ "$WW" -lt 0 ]; then
+		print_serial_number
+		printf "           ^\n"
+		print_error "Invalid week number in serial number!"
+	fi
+
+	# Get the TTT value (board type) from the model data
+	local TTT="$boardType"
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Generated board type" "$TTT"
+	fi
+
+	# Generate the CC value (checksum?)
+	# TODO: Research if this is a checksum, and see if it is possible to calculate it from the ROM
+	local CCCodes=('GU' '4N' 'J9' 'QX' 'OP' 'CD' '3F' 'U5' 'KP' 'D5' 'SJ' '7P' 'RG' 'W5' '92' 'MA' '2Y' '26' 'L0' 'NA' 'TL' '2D' '8U')
+	local CCIndex=$(jot -r 1  0 $((${#CCCodes[@]} - 1)))
+	local CC=${CCCodes[CCIndex]}
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Generated CC value" "$CC"
+	fi
+
+	# Generate the EEEE value from the model data
+	local EEEEIndex=$(jot -r 1  0 $((${#EEEECodes[@]} - 1)))
+	local EEEE=${EEEECodes[EEEEIndex]}
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Generated EEEE value" "$EEEE"
+	fi
+
+	# Generate the KK value
+	# TODO: Research this
+	local KKCodes=('1H' '1M' 'AD' '1F' 'A8' 'UE' 'JA' 'JC' '8C' 'CB' 'FB' 'A6' 'AL' 'AN' '16' 'A5' 'AH' 'AA' 'AD' 'AK' 'AN' '1W' 'AY' '1A')
+	local KKIndex=$(jot -r 1  0 $((${#KKCodes[@]} - 1)))
+	local KK=${KKCodes[KKIndex]}
+	if [ $gDebug -eq 1 ]; then
+		print_debug "Generated KK value" "$KK"
+	fi
+
+	gMLBSerialNumber="$PPP$Y$WW$TTT$CC$EEEE$KK"
+}
+
+# How many arguments were supplied?
+if [ $# -eq 1 ]; then
+	# Not enough. Print help and exit
+	help
+	exit
+elif [ $# -eq 2 ]; then
+	# Two. Set gProductName and gSerialNumber to the supplied parameters
+	gProductName="$1"
+	gSerialNumber="$2"
+else
+	# None. Use the system model ID and system serial number (from the IORegistry)
+	gProductName=$(ioreg -k product-name -d 2 | awk '/product-name/ {print $3}' | tr -d '"<>')
+	gSerialNumber=$(ioreg -k IOPlatformSerialNumber -d 2 | awk '/IOPlatformSerialNumber/ {print $3}' | tr -d '"')
+	if [ $gDebug -eq 1 ]; then
+		print_debug "NOTE" "No input product name found, using IORegistry value ($gProductName)"
+		print_debug "NOTE" "No input serial number found, using IORegistry value ($gSerialNumber)"
+	fi
+fi
+
+# Verify that serial number is 12 characters
+if [ ${#gSerialNumber} -ne 12 ]; then
+	print_error "Invalid serial number (not 12 characters)!"
+fi
+
+generate_mlb_serial
+if [ $gDebug -eq 1 ]; then
+	echo
+	print_debug "Generated $gProductName MLB serial number" "$gMLBSerialNumber"
+else
+	echo "$gMLBSerialNumber"
+fi

@@ -1,0 +1,180 @@
+#!/usr/bin/env bash
+# mg-common - common functions for MacGen
+
+set -e
+set -u
+
+# MacGen version
+gScriptVersion="2.1.0"
+# Debug mode, set to 1 to get information about the generated serial number
+gDebug=1
+# Styles
+gStyleReset="\e[0m"
+gStyleBold="\e[1m"
+gStyleUnderlined="\e[4m"
+# Colors
+gColorBlack="\e[1m"
+gColorRed="\e[1;31m"
+gColorGreen="\e[32m"
+gColorDarkYellow="\e[33m"
+gColorMagenta="\e[1;35m"
+gColorPurple="\e[35m"
+gColorCyan="\e[36m"
+gColorBlue="\e[1;34m"
+gColorOrange="\e[31m"
+gColorGrey="\e[37m"
+
+function print_error()
+{
+	# Print the error text and exit
+	printf "%b%bERROR: %b%s\n" $gColorRed $gStyleBold $gStyleReset "$1"
+	exit 1
+}
+
+function print_debug()
+{
+	# Print debug text as bold
+	printf "%b%s: %b%s\n" $gStyleBold "$1" $gStyleReset "$2"
+}
+
+# Returns the decoded location.
+function decode_location_val()
+{
+	local location="Unknown"
+
+	case $1 in
+		CK2)
+			location="Cork, Ireland"
+			;;
+		C02|C07)
+			location="Quanta Computer, China"
+			;;
+		C17|C1M)
+			location="Unknown, China"
+			;;
+		# D25)
+		#	location="????, ????"
+		#	;;
+		F5K)
+			location="Flextronics, United States"
+			;;
+	esac
+
+	echo "$location"
+}
+
+# Returns the decoded year number.
+function decode_year_val()
+{
+	local yearNumber=0
+
+	case $1 in
+		C|D)
+			let yearNumber=0
+			;;
+		F|G)
+			let yearNumber=1
+			;;
+		H|J)
+			let yearNumber=2
+			;;
+		K|L)
+			let yearNumber=3
+			;;
+		M|N)
+			let yearNumber=4
+			;;
+		P|Q)
+			let yearNumber=5
+			;;
+		R|S)
+			let yearNumber=6
+			;;
+		T|V)
+			let yearNumber=7
+			;;
+		W|X)
+			let yearNumber=8
+			;;
+		Y|Z)
+			let yearNumber=9
+			;;
+	esac
+
+	echo $yearNumber
+}
+
+# Returns the decoded week number.
+function decode_week_val()
+{
+	local weekNumber=0
+
+	case $1 in # These manufacture year values are offset by 27 weeks
+		D | G | J | L | N | Q | S | V | X | Z) let weekNumber=27;;
+	esac
+
+	case $2 in
+		[1-9])
+			let weekNumber+=$2
+			;;
+		C)
+			let weekNumber+=10
+			;;
+		D)
+			let weekNumber+=11
+			;;
+		F)
+			let weekNumber+=12
+			;;
+		G)
+			let weekNumber+=13
+			;;
+		H)
+			let weekNumber+=14
+			;;
+		K)
+			let weekNumber+=15
+			;;
+		L)
+			let weekNumber+=16
+			;;
+		M)
+			let weekNumber+=17
+			;;
+		N)
+			let weekNumber+=18
+			;;
+		P)
+			let weekNumber+=19
+			;;
+		Q)
+			let weekNumber+=20
+			;;
+		R)
+			let weekNumber+=21
+			;;
+		S)
+			let weekNumber+=22
+			;;
+		T)
+			let weekNumber+=23
+			;;
+		U)
+			let weekNumber+=24
+			;;
+		V)
+			let weekNumber+=25
+			;;
+		W)
+			let weekNumber+=26
+			;;
+		X)
+			let weekNumber+=27
+			;;
+		Y)
+			let weekNumber+=28
+			;;
+	esac
+
+	echo $weekNumber
+}
