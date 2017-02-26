@@ -5,7 +5,7 @@ set -e
 set -u
 
 # MacGen version
-gScriptVersion="2.1.1"
+gScriptVersion="2.1.2"
 # Debug mode, set to 1 to get information about the generated serial number
 gDebug=1
 # Styles
@@ -110,7 +110,9 @@ function decode_week_val()
 	local weekNumber=0
 
 	case $1 in # These manufacture year values are offset by 27 weeks
-		D | G | J | L | N | Q | S | V | X | Z) let weekNumber=27;;
+		D|G|J|L|N|Q|S|V|X|Z)
+			let weekNumber=27
+			;;
 	esac
 
 	case $2 in
