@@ -76,6 +76,16 @@ function generate_mlb_serial()
 	if [ $gDebug -eq 1 ]; then
 		print_debug "Manufacturing year (from serial number)" "201$Y"
 	fi
+	# Make sure the year value is valid (within the expected range)
+	# Credit: https://stackoverflow.com/a/8574392
+	local e
+	if [[ $(for e in "${YCodes}"; do [[ "$e" == "$Y" ]] && echo 0; done) -eq 0 ]]; then
+		# Y value from serial number does not match the expected range in the model data.
+		# Exit and print error message
+		print_serial_number
+		printf "         ^\n"
+		print_error "Invalid year in serial number ($gProductName was not produced in 201$Y)!"
+	fi
 
 	# Get the WW value (manufacturing week) from the serial number
 	local serialW="${gSerialNumber:4:1}"
@@ -85,10 +95,12 @@ function generate_mlb_serial()
 	if [ $gDebug -eq 1 ]; then
 		print_debug "Manufacturing week (from serial number)" "$WW"
 	fi
+	# Make sure the week value is valid
 	if [ "$WW" -lt 0 ]; then
+		# Week number value is less than zero. Exit and print error message.
 		print_serial_number
 		printf "           ^\n"
-		print_error "Invalid week number in serial number!"
+		print_error "Invalid week in serial number ($WW is less than zero)!"
 	fi
 
 	# Get the TTT value (board type) from the model data
