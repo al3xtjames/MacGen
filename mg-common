@@ -6,8 +6,7 @@ set -u
 
 # MacGen version
 gScriptVersion="2.1.2"
-# Debug mode, set to 1 to get information about the generated serial number
-gDebug=1
+
 # Styles
 gStyleReset="\e[0m"
 gStyleBold="\e[1m"
@@ -23,6 +22,15 @@ gColorCyan="\e[36m"
 gColorBlue="\e[1;34m"
 gColorOrange="\e[31m"
 gColorGrey="\e[37m"
+
+# Debug mode, set to 1 to get information about the generated serial number
+if [ ! -z ${MG_DEBUG+x} ]; then
+	# Set gDebug to the value of the MG_DEBUG environment variable (if it is set)
+	gDebug=$MG_DEBUG
+else
+	# Enable debug mode by default
+	gDebug=1
+fi
 
 function print_error()
 {
