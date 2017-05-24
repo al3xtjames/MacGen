@@ -39,6 +39,15 @@ elif [ "$gProductName" == "MacBookPro10,4" ]; then # MacBook Pro (Retina, 13-inc
 	local EEEECodes=('FF59' 'FF5D' 'FF5G' 'FF5J' 'FF58' 'FF5C' 'FF5F' 'FF5H')
 	local boardType=60Q
 
+elif [ "$gProductName" == "MacBookPro11,1" ]; then # MacBook Pro (Retina, 13-inch, Late 2013)
+	# System serial data
+	local PPPCodes=('C02') # Manufactured at Quanta Computer, China
+	local YCodes=('L' 'M' 'N') # Manufactured in 2013-2014
+	local CCCCCodes=('FGYY' 'FH00' 'FH01' 'FH02' 'FH03' 'FH04' 'FH05' 'FRF6' 'FRF7' 'FRQF' 'FT4Q' 'FT4R' 'FT4T' 'FT4V' 'FTC9' 'FTCD' 'FTCH' 'FTCK' 'FTCL' 'FTPH' 'FTPJ' 'FTPK' 'FTT4' 'FVVW' 'FVWQ' 'G4N6' 'G4N7')
+	# Main logic board serial data
+	local EEEECodes=('FH31' 'FH35' 'FJYK' 'FJYL' 'FJYM' 'FMQF' 'FMQG')
+	local boardType=611
+
 elif [ "$gProductName" == "MacBookPro11,4" ]; then # MacBook Pro (Retina, 15-inch, Mid 2015)
 	# System serial data
 	local PPPCodes=('C02') # Manufactured at Quanta Computer, China
