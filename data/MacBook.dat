@@ -16,8 +16,8 @@ elif [ "$gProductName" == "MacBook9,1" ]; then # MacBook (Retina, 12-inch, Early
 	local YCodes=('R' 'S' 'T') # Manufactured in early 2016 to late 2017
 	local CCCCCodes=('GTHR' 'GTHT' 'GTHV' 'GTHW' 'GTHX' 'GTHY' 'GTJ0' 'GTJ1' 'GTJ2' 'GTJ3' 'GTJ4' 'GTJ6' 'GTJ7' 'GTJ8' 'GTJ9' 'GTJC' 'GTJD' 'H3QW' 'H3QX' 'H3QY' 'H3R5' 'H3R6' 'H3R7')
 	# Main logic board serial data
-	local EEEECodes=('H6KT')
-	local boardType=307
+	local EEEECodes=('H6KT' 'H6KX')
+	local boardType=601
 
 else
 	print_error "Invalid model identifier!"
