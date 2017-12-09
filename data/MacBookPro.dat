@@ -102,6 +102,15 @@ elif [ "$gProductName" == "MacBookPro13,2" ]; then # MacBook Pro (13-inch, 2016,
 	# local EEEECodes=('XXXX')
 	# local boardType=XXX
 
+elif [ "$gProductName" == "MacBookPro14,1" ]; then # MacBook Pro (13-inch, 2017, Two Thunderbolt 3 Ports)
+	# System serial data
+	local PPPCodes=('C02' 'C17') # Manufactured at Quanta Computer, China
+	local YCodes=('T' 'V') # Manufactured in early 2017 to late 2017
+	local CCCCCodes=('HV22' 'HV29' )
+	# Main logic board serial data
+	local EEEECodes=('HWVQ')
+	local boardType=200
+
 else
 	print_error "Invalid model identifier!"
 fi
